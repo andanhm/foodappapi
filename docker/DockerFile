@@ -1,0 +1,15 @@
+FROM node:boron
+MAINTAINER Andan H M
+
+ADD src /home/code/
+ADD etc /etc
+ADD ssh /root/.ssh
+RUN chmod 400 /root/.ssh/id_rsa
+
+
+RUN yum clean all && yum -y -q install make gcc-c++
+RUN cd /home/code && npm install --production && npm install
+
+EXPOSE 8080
+
+ENTRYPOINT /usr/bin/supervisord -n -c /etc/supervisord.conf
