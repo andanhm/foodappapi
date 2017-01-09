@@ -3,9 +3,9 @@
  */
 
 'use strict';
-var mongoClient = require('./mongoClient'),
-    debug = require('debug')('foodapp:db'),
-    mongo = require('mongodb');
+var mongoClient = require('./mongoClient')
+  , debug = require('debug')('foodapp:db')
+  , mongo = require('mongodb');
 
 /**
  * Convert the string id to MongoDB document ObjectId
@@ -41,8 +41,8 @@ function getObjectIdTimeStamp(id) {
  * @param  {String} collectionName Collection name need to be checked in the database
  * @param  {doesCollectionExistsCallback} callback A callback to mongodb collection exits status
  */
-function doesCollectionExists(systemName, collectionName, callback) {
-    var db = mongoClient.getDb(systemName);
+function doesCollectionExists(collectionName, callback) {
+    var db = mongoClient.getDb();
     try {
         db.listCollections().toArray(function(err, collections) {
             if (err) {
@@ -82,8 +82,8 @@ function doesCollectionExists(systemName, collectionName, callback) {
  * @param  {String} collectionName Collection name need to be created
  * @param  {createCollectionCallback} callback A callback to mongodb collection creaction status
  */
-function createCollection(systemName, collectionName, callback) {
-    var db = mongoClient.getDb(systemName);
+function createCollection(collectionName, callback) {
+    var db = mongoClient.getDb();
     db.createCollection(collectionName, function(err, result) {
         if (err) {
             return callback({
@@ -114,9 +114,8 @@ function createCollection(systemName, collectionName, callback) {
  * @param  {JSON Object} data Data need to be added to collection
  * @param  {insertCallback} callback Callback MongoDB insert status
  */
-function insert(systemName, collection, data, callback) {
-    debug('Mongo Insert ->%s collection getDB ->', systemName, collection);
-    var db = mongoClient.getDb(systemName);
+function insert(collection, data, callback) {
+    var db = mongoClient.getDb();
     db.collection(collection).insert(data, function(err, result) {
         if (err) {
             return callback({
@@ -158,8 +157,8 @@ function insert(systemName, collection, data, callback) {
  * @param  {JSON Object} data Data need to be find in the collection
  * @param  {findCallback} callback Callback Status and document of the colection.
  */
-function find(systemName, collectionName, collectionData, callback) {
-    var db = mongoClient.getDb(systemName);
+function find(collectionName, collectionData, callback) {
+    var db = mongoClient.getDb();
     db.collection(collectionName).find(collectionData).toArray(function(err, result) {
         if (err) {
             return callback({
@@ -190,8 +189,8 @@ function find(systemName, collectionName, collectionData, callback) {
  * @param  {JSON Object} data Data need to be find only one object in the collection
  * @param  {findOneCallback} callback Callback Status and document of the colection.
  */
-function findOne(systemName, collectionName, collectionData, callback) {
-    var db = mongoClient.getDb(systemName);
+function findOne(collectionName, collectionData, callback) {
+    var db = mongoClient.getDb();
     db.collection(collectionName).findOne(collectionData, function(err, result) {
         if (err) {
             return callback({
@@ -222,8 +221,8 @@ function findOne(systemName, collectionName, collectionData, callback) {
  * @param  {JSON Object} data Data need to be find only one object in the collection
  * @param  {countCallback} callback Callback Status and document of the colection.
  */
-function count(systemName, collectionName, collectionData, callback) {
-    var db = mongoClient.getDb(systemName);
+function count(collectionName, collectionData, callback) {
+    var db = mongoClient.getDb();
     db.collection(collectionName).find(collectionData).count(function(err, collectionCount) {
         if (err) {
             return callback({
@@ -255,8 +254,8 @@ function count(systemName, collectionName, collectionData, callback) {
  * @param  {Object} updateCollectionData Data need to be updated in the collection
  * @param  {updateOneCallback} callback Return the status of the update
  */
-function updateOne(systemName, collectionName, collectionData, updateCollectionData, callback) {
-    var db = mongoClient.getDb(systemName);
+function updateOne(collectionName, collectionData, updateCollectionData, callback) {
+    var db = mongoClient.getDb();
     db.collection(collectionName).updateOne(collectionData, {
         $set: updateCollectionData
     }, function(err, result) {
@@ -290,8 +289,8 @@ function updateOne(systemName, collectionName, collectionData, updateCollectionD
  * @param  {Object} updateCollectionData Data need to be updated in the collection
  * @param  {updateCallback} callback Return the status of the update
  */
-function update(systemName, collectionName, collectionData, updateCollectionData, callback) {
-    var db = mongoClient.getDb(systemName);
+function update( collectionName, collectionData, updateCollectionData, callback) {
+    var db = mongoClient.getDb();
     db.collection(collectionName).updateOne(collectionData, {
         $set: updateCollectionData
     }, function(err, result) {
@@ -321,8 +320,8 @@ function update(systemName, collectionName, collectionData, updateCollectionData
  * @method
  * @param  {listCollectionsCallback} callback Return the MongoDB collection
  */
-function listCollections(systemName, callback) {
-    var db = mongoClient.getDb(systemName);
+function listCollections( callback) {
+    var db = mongoClient.getDb();
     db.listCollections().toArray(function(err, collInfos) {
         if (err) {
             return callback({
@@ -353,8 +352,8 @@ function listCollections(systemName, callback) {
  * @param  {Object} aggregateCondition MongoDB Query
  * @param  {aggregateCallback} callback Return the array aggregated data
  */
-function aggregate(systemName, collectionName, aggregateCondition, callback) {
-    var db = mongoClient.getDb(systemName);
+function aggregate( collectionName, aggregateCondition, callback) {
+    var db = mongoClient.getDb();
     db.collection(collectionName).aggregate(aggregateCondition, function(err, result) {
         if (err) {
             return callback({
@@ -383,8 +382,8 @@ function aggregate(systemName, collectionName, aggregateCondition, callback) {
  * @method
  * @param  {dropDatabaseCallback} callback The drop collection result callback
  */
-function dropDatabase(systemName, callback) {
-    var db = mongoClient.getDb(systemName);
+function dropDatabase( callback) {
+    var db = mongoClient.getDb();
     db.dropDatabase(function(err, result) {
         if (err) {
             return callback({
@@ -413,8 +412,8 @@ function dropDatabase(systemName, callback) {
  * @method
  * @param  {dropCollectionCallback} callback The drop collection result callback
  */
-function dropCollection(systemName, name, callback) {
-    var db = mongoClient.getDb(systemName);
+function dropCollection( name, callback) {
+    var db = mongoClient.getDb();
     db.collection(name, function(err, collection) {
         if (err) {
             return callback({
@@ -439,8 +438,8 @@ function dropCollection(systemName, name, callback) {
     });
 }
 
-function emptyCollection(systemName, name, callback) {
-    var db = mongoClient.getDb(systemName);
+function emptyCollection( name, callback) {
+    var db = mongoClient.getDb();
     db.collection(name, function(err, collection) {
         if (err) {
             return callback({

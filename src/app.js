@@ -9,13 +9,12 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing'
     // process.env.DEBUG = '';
 }
 
-var errSource = require('path').basename(__filename),
-    debug = require('debug')('foodapi:app'),
-    log = require('./handlers/logs.js'),
-    cluster = require('cluster'),
-    numCPUs = require('os').cpus().length,
-    config = require('./config/' + process.env.NODE_ENV + '.json'),
-    appVersion = process.env.VERSION;
+var errSource = require('path').basename(__filename)
+  , debug = require('debug')('foodapi:app')
+  , log = require('./handlers/logs.js')
+  , cluster = require('cluster')
+  , numCPUs = require('os').cpus().length
+  , config = require('./config/' + process.env.NODE_ENV + '.json');
 
 process.env.PORT = process.env.PORT || config.port;
 
@@ -53,9 +52,9 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-    var express = require('express'),
-        bodyParser = require('body-parser'),
-        app = express();
+    var express = require('express')
+      , bodyParser = require('body-parser')
+      , app = express();
 
     app.set('env', process.env.NODE_ENV);
     app.set('port', process.env.PORT);
@@ -100,7 +99,7 @@ if (cluster.isWorker) {
      */
     app.use(express.static(require('path').join(__dirname, 'public')));
 
-    // Home Page of the service. Ideally should return 'ok' for foodapi-health-check
+    // Home Page of the service. Ideally should return 200 status for foodapi-health-check
     app.get('/', function(req, res) {
         res.status(200).type('json').send({
             error: {},
@@ -109,15 +108,16 @@ if (cluster.isWorker) {
             }
         });
     });
+    /** 
+    * Auth Middleware - This will check if the token is valid
+    * Only the requests that start with /api will be checked for the token.
+    * Any URL's that do not follow the below pattern should be avoided unless you 
+    * are sure that authentication is not needed
+    */
+    app.all('/api/*', [require('./middelwares/authenticate')]);
+
     // Routes for user API
     require('./routes/user.js')(app);
-
-    // catch 404 and forward to error handler
-    app.use((req, res, next) => {
-        var error = new Error('Are you lost?');
-        error.status = 404;
-        next(error);
-    });
 
     if (app.get('env') === 'development') {
         app.use((error, req, res, next) => {
@@ -127,15 +127,21 @@ if (cluster.isWorker) {
     }
 
     app.use((error, req, res, next) => {
-        res.status(error.status || 500).send({
+        res.status(error.status || 404).type('json').send({
             error: {
                 title: 'error',
                 error: error,
                 message: error.message,
                 trace: error.stack
             },
-            data: {},
-            version: appVersion
+            data: {}
+        });
+    });
+
+    app.use((error, req, res, next) => {
+        res.status(error.status || 500).type('json').send({
+            error: error,
+            data: {}
         });
     });
 

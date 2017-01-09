@@ -1,8 +1,8 @@
 'use strict';
-var mongodb = require('mongodb'),
-    qManConfig = require('../../config/' + process.env.NODE_ENV + '.json'),
-    MongoClient = mongodb.MongoClient,
-    debug = require('debug')('foodapp:mongodb');
+const mongodb = require('mongodb')
+    , foodAppConfig = require('../../config/' + process.env.NODE_ENV + '.json')
+    , MongoClient = mongodb.MongoClient
+    , debug = require('debug')('foodapp:mongodb');
 
 /**
  * Get the MongoDB connect URI fromat for connection
@@ -12,13 +12,13 @@ var mongodb = require('mongodb'),
  * @see {@link https://docs.mongodb.com/manual/reference/connection-string/|MongoDB}
  */
 function getMongoDBUri() {
-    var host = qManConfig.mongodb.host,
-        port = qManConfig.mongodb.port,
-        dbName = qManConfig.mongodb.name,
-        username = qManConfig.mongodb.username,
-        password = qManConfig.mongodb.password,
-        mongoDBUri = 'mongodb://' + username + ':' + password + '@' + host + ':' + port + '/' + dbName, // Remote MongoDB URI with username and password
-        mongoDBUri = 'mongodb://' + host + ':' + port + '/' + dbName; // For local env MongoDB Uri with out username and password
+    let host = foodAppConfig.mongodb.host
+      , port = foodAppConfig.mongodb.port
+      , dbName = foodAppConfig.mongodb.name
+      , username = foodAppConfig.mongodb.username
+      , password = foodAppConfig.mongodb.password
+//      , mongoDBUri = 'mongodb://' + username + ':' + password + '@' + host + ':' + port + '/' + dbName // Remote MongoDB URI with username and password
+      , mongoDBUri = 'mongodb://' + host + ':' + port + '/' + dbName; // For local env MongoDB Uri with out username and password
     return mongoDBUri;
 }
 
@@ -47,13 +47,13 @@ function connect(callback) {
             }
         },
         replSet: {},
-        mongos: true
+        mongos: {}
     };
     MongoClient.connect(getMongoDBUri(), mongoOption, function(err, db) {
         if (err) {
             return callback(err);
         }
-        debug('New connection to MongoDB %s ', qManConfig.mongodb.dbname);
+        debug('New connection to MongoDB %s ', foodAppConfig.mongodb.name);
         _db = db;
     });
 }

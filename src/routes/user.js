@@ -1,8 +1,7 @@
 'use strict';
-var errSource = require('path').basename(__filename),
-    appDetails = require('../package.json'),
-    log = require('../handlers/logs.js'),
-    router = require('express').Router();
+var errSource = require('path').basename(__filename)
+  , log = require('../handlers/logs.js') 
+  , router = require('express').Router(); // eslint-disable-line
 
 module.exports = function(app) {
     app.use('/v2/user', router); //Default route

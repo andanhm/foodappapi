@@ -1,20 +1,22 @@
 'use strict';
-var moment = require('moment');
+const moment = require('moment');
 /**
  * Converts the Milliseconds to human readable format using moment.js (hh:mm:ss)
  * @param  {number} ms Milliseconds that need to coverted
+ * @returns {String} Returns formated time
  */
 function formatTime(milliSeconds) {
-    var date = new Date().getTime() + milliSeconds
+    let date = new Date().getTime() + milliSeconds
       , momentObj = moment(new Date(date), ['h:mm:ss A']);
     return momentObj.format('h:mm:ss A');
 }
 /**
  * Converts the Milliseconds to human readable format using moment.js (hh:mm:ss)
  * @param  {number} ms Milliseconds that need to coverted
+ * @returns {Object} Returns coverted time human readable format  
  */
 function convertMillisecondsToDigitalClock(milliSeconds) {
-    var mm = moment.duration(milliSeconds)
+    let mm = moment.duration(milliSeconds)
       , hours = mm.hours()
       , minutes = mm.minutes()
       , seconds = mm.seconds();
@@ -25,7 +27,6 @@ function convertMillisecondsToDigitalClock(milliSeconds) {
         hours: hours,
         minutes: minutes,
         seconds: seconds,
-        arrivalTime: formatTime(milliSeconds),
         clock: hours + ' hours ' + minutes + ' minutes ' + seconds + ' seconds'
     };
 }

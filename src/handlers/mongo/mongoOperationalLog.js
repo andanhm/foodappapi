@@ -1,10 +1,10 @@
 'use strict';
-var errSource = require('path').basename(__filename),
-    mongoDB = require('./db'),
-    time = require('../../controllers/utilities/time'),
-    serverName = require('os').hostname(),
-    debug = require('debug')('foodapp:' + errSource),
-    appVersion = process.env.VERSION;
+const errSource = require('path').basename(__filename)
+    , mongoDB = require('./db')
+    , time = require('../../controllers/utilities/time')
+    , serverName = require('os').hostname()
+    , debug = require('debug')('foodapp:' + errSource)
+    , appVersion = process.env.VERSION;
 /**
  * Callback for logging MongoDB operations
  *
@@ -16,13 +16,12 @@ var errSource = require('path').basename(__filename),
  * Function to format text which needs to be written in to the MongoDB
  *
  * @param  {Object} logObj Operational log that need to be added to the MongoDB
- * @param  {String} logObj.queueName The name of the queue.
+ * @param  {String} logObj.username The name of the queue.
  * @param  {String} logObj.opType The MongoDB operational type (Create,Delete,Update).
- * @param  {String} logObj.requestUrl Request Url to indentify the which host requested
  * @param  {logItCallback} callback Callback for operational log entery
  */
 function logIt(logObj, callback) {
-    var checkObj = ['queueName', 'opType', 'requestUrl']; // Check this object present in the logObj before logging to the MongoDB
+    var checkObj = ['opType', 'username']; // Check this object present in the logObj before logging to the MongoDB
     checkObj.forEach(function(obj) {
         if (!logObj.hasOwnProperty(obj)) {
             return callback({
@@ -37,13 +36,12 @@ function logIt(logObj, callback) {
             }, null);
         }
     });
-    var collectionName = 'queueLogs',
+    var collectionName = 'logs',
         loggerObj = {
             timestamp: time.now(),
             serverName: serverName,
             operationalType: logObj.opType,
-            queueName: logObj.queueName,
-            requestUrl: logObj.requestUrl,
+            name: logObj.username,
             version: appVersion
         };
     debug('MongoDB operational log %s ', JSON.stringify(loggerObj));
