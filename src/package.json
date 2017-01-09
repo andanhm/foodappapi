@@ -1,0 +1,42 @@
+{
+  "name": "foodappapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "lint": "eslint .",
+    "start": "NODE_ENV=development node app",
+    "test": "mocha --timeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andanhm/foodappapi.git"
+  },
+  "devDependencies": {
+    "eslint": "^3.12.2",
+    "loadtest": "^2.2.1",
+    "mocha": "^2.5.3",
+    "should": "^11.1.2",
+    "supertest": "^2.0.1"
+  },
+  "dependencies": {
+    "async": "^2.1.4",
+    "body-parser": "^1.10.0",
+    "debug": "^2.1.0",
+    "express": "^4.10.6",
+    "moment": "^2.17.1",
+    "mongodb": "^2.2.19",
+    "response-time": "^2.3.2",
+    "url": "^0.11.0"
+  },
+  "engines": {
+    "node": ">= 6.9.1"
+  },
+  "keywords": [],
+  "author": "Andan H M",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andanhm/foodappapi/issues"
+  },
+  "homepage": "https://github.com/andanhm/foodappapi#readme"
+}
