@@ -1,0 +1,11 @@
+{
+    "multiples": 1,
+    "port": 8080,
+    "mongodb": {
+        "username": "",
+        "password": "",
+        "name": "foodapp",
+        "host": "127.0.0.1",
+        "port": "27017"
+    }
+}

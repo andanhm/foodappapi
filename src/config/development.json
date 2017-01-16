@@ -1,6 +1,7 @@
 {
     "multiples": 1,
     "port": 8080,
+    "mochaTestURL": "http://localhost:8080",
     "mongodb": {
         "username": "",
         "password": "",

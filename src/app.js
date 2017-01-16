@@ -5,8 +5,8 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 process.env.VERSION = require('./package.json').version || 'undefined';
 
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing') {
-    process.env.DEBUG = process.env.DEBUG || 'app,express:router,express:application,foodapi:*,mongodb';
-    // process.env.DEBUG = '';
+    // process.env.DEBUG = process.env.DEBUG || 'app,express:router,express:application,foodapi:*,mongodb';
+    process.env.DEBUG = 'foodapi:*';
 }
 
 const errSource = require('path').basename(__filename),
@@ -66,6 +66,7 @@ function createAppCluster() {
 function appInitiation() {
     let express = require('express'),
         bodyParser = require('body-parser'),
+        mongodbClient = require('./handlers/mongo/mongoClient'),
         app = express();
 
     app.set('env', process.env.NODE_ENV);
@@ -75,6 +76,8 @@ function appInitiation() {
 
     app.disable('x-powered-by');
     app.disable('etag');
+
+    app.use(require('cookie-parser')()); //Cookie parsing middleware
     app.use(bodyParser.json()); // to support JSON-encoded bodies
     app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
         extended: true
@@ -88,7 +91,8 @@ function appInitiation() {
         res.setHeader('X-App-Version', app.get('version'));
         next();
     });
-
+    //Display express server routes in your terminal
+    require('express-routemap')(app);
     app.all((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -101,11 +105,9 @@ function appInitiation() {
         }
     });
 
-    require('./handlers/mongo/mongoClient').connect((err) => {
-        if (err) {
-            debug('MongoDb connection error');
-        }
-    });
+    //Establishes connection to the mongodb
+    mongodbClient.connect();
+
     /**
      * API routes
      */
@@ -115,6 +117,7 @@ function appInitiation() {
     app.get('/', function(req, res) {
         res.status(200).type('json').send({
             error: {},
+            version: app.get('version'),
             data: {
                 message: `API running in ${process.env.NODE_ENV} mode`
             }
@@ -184,8 +187,11 @@ function appInitiation() {
         process.exit(1);
     });
 
-    process.on('SIGINT', function() {
-        debug('gotta exit - SIGINT');
-        process.exit(0);
+    // If the Node process ends, close the Mongoose connection 
+    process.on('SIGINT', () => {
+        mongodbClient.close(() => {
+            debug('Mongoose default connection disconnected through app termination');
+            process.exit(0);
+        });
     });
 }

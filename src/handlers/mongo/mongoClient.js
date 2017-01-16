@@ -1,8 +1,7 @@
 'use strict';
-const mongodb = require('mongodb')
-    , foodAppConfig = require('../../config/' + process.env.NODE_ENV + '.json')
-    , MongoClient = mongodb.MongoClient
-    , debug = require('debug')('foodapp:mongodb');
+const mongoose = require('mongoose'),
+    foodAppConfig = require('../../config/' + process.env.NODE_ENV + '.json'),
+    debug = require('debug')('foodapp:mongodb');
 
 /**
  * Get the MongoDB connect URI fromat for connection
@@ -12,17 +11,17 @@ const mongodb = require('mongodb')
  * @see {@link https://docs.mongodb.com/manual/reference/connection-string/|MongoDB}
  */
 function getMongoDBUri() {
-    let host = foodAppConfig.mongodb.host
-      , port = foodAppConfig.mongodb.port
-      , dbName = foodAppConfig.mongodb.name
-      , username = foodAppConfig.mongodb.username
-      , password = foodAppConfig.mongodb.password
-//      , mongoDBUri = 'mongodb://' + username + ':' + password + '@' + host + ':' + port + '/' + dbName // Remote MongoDB URI with username and password
-      , mongoDBUri = 'mongodb://' + host + ':' + port + '/' + dbName; // For local env MongoDB Uri with out username and password
+    let host = foodAppConfig.mongodb.host,
+        port = foodAppConfig.mongodb.port,
+        dbName = foodAppConfig.mongodb.name,
+        username = foodAppConfig.mongodb.username,
+        password = foodAppConfig.mongodb.password,
+        // mongoDBUri = 'mongodb://' + username + ':' + password + '@' + host + ':' + port + '/' + dbName, // Remote MongoDB URI with username and password
+        mongoDBUri = 'mongodb://' + host + ':' + port + '/' + dbName; // For local env MongoDB Uri with out username and password
     return mongoDBUri;
 }
 
-var _db = {};
+var db = {};
 /**
  * Callback error details if unable to connect the MongoDB
  * @callback connectCallback
@@ -35,26 +34,38 @@ var _db = {};
  * @method
  * @param  {connectCallback} callback - A callback to MongoDB connection error details
  */
-function connect(callback) {
-    var mongoOption = {
-        db: {
-            'native_parser': false
+function connect() {
+    let mongoOption = {
+            db: {
+                'native_parser': false
+            },
+            server: {
+                poolSize: 5,
+                'auto_reconnect': true,
+                socketOptions: {
+                    connectTimeoutMS: 500
+                }
+            },
+            replSet: {}
         },
-        server: {
-            'auto_reconnect': true,
-            socketOptions: {
-                connectTimeoutMS: 500
-            }
-        },
-        replSet: {},
-        mongos: {}
-    };
-    MongoClient.connect(getMongoDBUri(), mongoOption, function(err, db) {
-        if (err) {
-            return callback(err);
-        }
-        debug('New connection to MongoDB %s ', foodAppConfig.mongodb.name);
-        _db = db;
+        dbURI = getMongoDBUri();
+    mongoose.connect(dbURI, mongoOption);
+    db = mongoose.connection;
+    db.once('open', function() {
+        debug('MongoDB connected');
+    });
+    db.on('connected', function() {
+        console.log('Mongoose default connection open to ' + dbURI);
+    });
+
+    // If the connection throws an error
+    db.on('error', function(err) {
+        console.log('Mongoose default connection error: ' + err);
+    });
+
+    // When the connection is disconnected
+    db.on('disconnected', function() {
+        console.log('Mongoose default connection disconnected');
     });
 }
 

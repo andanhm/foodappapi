@@ -3,9 +3,9 @@
  */
 
 'use strict';
-var mongoClient = require('./mongoClient')
-  , debug = require('debug')('foodapp:db')
-  , mongo = require('mongodb');
+const mongoClient = require('./mongoClient'),
+    debug = require('debug')('foodapp:db'),
+    mongoose = require('mongoose');
 
 /**
  * Convert the string id to MongoDB document ObjectId
@@ -15,7 +15,7 @@ var mongoClient = require('./mongoClient')
  * @param  {ObjectId()} id Return MongoDB Document ObjectId
  */
 function converToMonogoObjectID(id) {
-    return new mongo.ObjectID(id);
+    return new mongoose.mongo.BSONPure.ObjectID.fromHexString(id); // eslint-disable-line
 }
 /**
  * Gets the MongoDB Document ObjectId created timestamp
@@ -25,7 +25,7 @@ function converToMonogoObjectID(id) {
  * @param  {Time} id Return MongoDB Document ObjectId created timestamp
  */
 function getObjectIdTimeStamp(id) {
-    return new mongo.ObjectID(id).getTimestamp();
+    return new mongoose.mongo.BSONPure.ObjectID.fromHexString(id).getTimestamp(); // eslint-disable-line
 }
 /**
  * Callback for status of a collection exists.
@@ -124,10 +124,8 @@ function insert(collection, data, callback) {
                 message: err.message
             }, null);
         }
-        /* jshint ignore:start */
         var _id = result.ops[0]._id;
-        /* jshint ignore:end */
-        if (_id !== undefined) {
+        if (!_id) {
             return callback(null, {
                 status: true,
                 id: _id,
@@ -289,7 +287,7 @@ function updateOne(collectionName, collectionData, updateCollectionData, callbac
  * @param  {Object} updateCollectionData Data need to be updated in the collection
  * @param  {updateCallback} callback Return the status of the update
  */
-function update( collectionName, collectionData, updateCollectionData, callback) {
+function update(collectionName, collectionData, updateCollectionData, callback) {
     var db = mongoClient.getDb();
     db.collection(collectionName).updateOne(collectionData, {
         $set: updateCollectionData
@@ -320,7 +318,7 @@ function update( collectionName, collectionData, updateCollectionData, callback)
  * @method
  * @param  {listCollectionsCallback} callback Return the MongoDB collection
  */
-function listCollections( callback) {
+function listCollections(callback) {
     var db = mongoClient.getDb();
     db.listCollections().toArray(function(err, collInfos) {
         if (err) {
@@ -352,7 +350,7 @@ function listCollections( callback) {
  * @param  {Object} aggregateCondition MongoDB Query
  * @param  {aggregateCallback} callback Return the array aggregated data
  */
-function aggregate( collectionName, aggregateCondition, callback) {
+function aggregate(collectionName, aggregateCondition, callback) {
     var db = mongoClient.getDb();
     db.collection(collectionName).aggregate(aggregateCondition, function(err, result) {
         if (err) {
@@ -382,7 +380,7 @@ function aggregate( collectionName, aggregateCondition, callback) {
  * @method
  * @param  {dropDatabaseCallback} callback The drop collection result callback
  */
-function dropDatabase( callback) {
+function dropDatabase(callback) {
     var db = mongoClient.getDb();
     db.dropDatabase(function(err, result) {
         if (err) {
@@ -412,7 +410,7 @@ function dropDatabase( callback) {
  * @method
  * @param  {dropCollectionCallback} callback The drop collection result callback
  */
-function dropCollection( name, callback) {
+function dropCollection(name, callback) {
     var db = mongoClient.getDb();
     db.collection(name, function(err, collection) {
         if (err) {
@@ -438,7 +436,7 @@ function dropCollection( name, callback) {
     });
 }
 
-function emptyCollection( name, callback) {
+function emptyCollection(name, callback) {
     var db = mongoClient.getDb();
     db.collection(name, function(err, collection) {
         if (err) {

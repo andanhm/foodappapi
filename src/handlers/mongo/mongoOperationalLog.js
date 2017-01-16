@@ -1,10 +1,11 @@
 'use strict';
-const errSource = require('path').basename(__filename)
-    , mongoDB = require('./db')
-    , time = require('../../controllers/utilities/time')
-    , serverName = require('os').hostname()
-    , debug = require('debug')('foodapp:' + errSource)
-    , appVersion = process.env.VERSION;
+const errSource = require('path').basename(__filename),
+    mongoDB = require('./db'),
+    time = require('../../controllers/utilities/time'),
+    serverName = require('os').hostname(),
+    debug = require('debug')('foodapp:' + errSource),
+    Log = require('../../models/log'), // grab the log model
+    appVersion = process.env.VERSION;
 /**
  * Callback for logging MongoDB operations
  *
@@ -36,16 +37,15 @@ function logIt(logObj, callback) {
             }, null);
         }
     });
-    var collectionName = 'logs',
-        loggerObj = {
-            timestamp: time.now(),
-            serverName: serverName,
-            operationalType: logObj.opType,
-            name: logObj.username,
-            version: appVersion
-        };
+    let loggerObj = {
+        timestamp: time.now(),
+        serverName: serverName,
+        opType: logObj.opType,
+        name: logObj.username,
+        version: appVersion
+    };
     debug('MongoDB operational log %s ', JSON.stringify(loggerObj));
-    mongoDB.insert(collectionName, loggerObj, function(err, result) { // Inset data in to the queueLogs collection
+    Log.save(loggerObj, function(err, result) { // Inset data in to the queueLogs collection
         debug('MongoDB insert operational log error %s result %s', JSON.stringify(err), JSON.stringify(result));
         if (err) {
             return callback({
