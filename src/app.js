@@ -95,7 +95,7 @@ function appInitiation() {
     require('express-routemap')(app);
     app.all((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With,X-Access-Token, Content-Type, Accept');
         res.setHeader('Access-Control-Allow-Methods', 'POST,GET,PUT,DELETE,OPTIONS');
         res.setHeader('Access-Control-Max-Age', '36000');
         if (req.method === 'OPTIONS') {
@@ -189,7 +189,7 @@ function appInitiation() {
 
     // If the Node process ends, close the Mongoose connection 
     process.on('SIGINT', () => {
-        mongodbClient.close(() => {
+        mongodbClient.getDb().close(() => {
             debug('Mongoose default connection disconnected through app termination');
             process.exit(0);
         });

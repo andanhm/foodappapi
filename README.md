@@ -11,7 +11,7 @@ To run the project in development mode (environment: development), you need to c
 ```
 $ npm start
 ```
-## Version
+### Version
 
 The below will get you project version number and the project name
 
@@ -36,6 +36,7 @@ Current API entry format:
 | HTTP Status Code | Description |
 | --- | --- |
 | OK (200) | This is the generic status code for a successfully processed request. |
+| No content (204) | This is the generic status code for a successfully processed request but no data found. |
 | Created (201) | This is the generic status code for a successfully processed request. |
 | Bad Request (400) | The service is unable to understand and process the request. |
 | Not Found (404) | No results were found (on a search request), or object specified in URI does not exist. |
@@ -88,9 +89,9 @@ Artillery scripts folder structure
 ```
 - scripts /
     |__ artillery /
-            |__ create /
-                    |__ paload.csv
-	    	    	|__ user-create.json
+        |__ create /
+            |__ paload.csv
+	    |__ user-create.json
 ```
 
 ### Postman
@@ -108,34 +109,38 @@ Postman Food APP API collection
     |__ Dockerfile
 - scripts /
     |__ artillery /
-            |__ create /
-                    |__ paload.csv
-	    	    	      |__ user-create.json
+        |__ create /
+            |__ paload.csv
+	    |__ user-create.json
     |__ postman /
-            |__ Food-App.postman_collection
+        |__ Food-App.postman_collection
 - src/
-	|__ package.json
+    |__ package.json
     |__ public /
     |__ test /
-			|__ apiTest.js
-	|__ config /
-			|__ development.json
-			|__ producation.json 
-			|__ testing.json                           
-	|__ app.js
+	|__ apiTest.js
+    |__ config /
+	|__ development.json
+	|__ producation.json 
+	|__ testing.json                           
+    |__ app.js
     |__ cleanup.js
-	|__ controllers /
-            |__ utilites /
-                    |__ http.js
-                    |__ time.js
+    |__ controllers /
+        |__ user /
+            |__ userCtrl.js
+        |__ token.js                    
+    |__ utilites /
+           |__ http.js
+           |__ time.js
     |__ handlers
-            |__ mongo /
-                  |__ db.js
-                  |__ mongoClient.js
-                  |__ mongoOperationalLog.js
-            |__ logs.js
+        |__ mongo /
+            |__ db.js
+            |__ mongoClient.js
+            |__ mongoOperationalLog.js
+        |__ logs.js
     |__ routes /
-			|__ user.js
+	|__ user.js
+    |__ gulpfile.js
 ```
 
 ### Tech
@@ -146,6 +151,23 @@ Food App uses a number of open source projects to work properly:
 * [node.js] - evented I/O for the backend
 * [Express] - fast node.js network app framework
 * [MongoDB] - MongoDB is a free and open-source cross-platform document-oriented database program
+* [mongoosejs] - elegant mongodb object modeling for node.js
+* [JWT] - JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
+
+### Development tech
+Food App uses a number of open source projects to make development faster, efficient and automat the build process:
+
+* [ESLint] - A pluggable and configurable linter tool for identifying and reporting on patterns in JavaScript. Maintain your code quality with ease.!
+* [Gulp] - Gulp is a toolkit for automating painful or time-consuming tasks in your development workflow, so you can stop messing around and build something.
+* [Mocha] - A test framework running on node.js and the browser which runs tests serially, mapping uncaught exceptions to the correct test cases.
+* [Nodemon] - Nodemon is a utility that will monitor for any changes in your source and automatically restart your server.
+* [Should] - should is an expressive, readable, framework-agnostic assertion library.
+* [Supertest] - Super-agent driven library for testing node.js HTTP servers using a fluent API
+
+### Development tool 
+* [Visual Studio Code] - Visual Studio Code is a lightweight but powerful source code editor which runs on your desktop and is available for Windows, Mac and Linux.
+* [Postman] - A powerful GUI platform to make your API development faster & easier, from building API requests through testing, documentation and sharing.
+* [RoboMongo] - Native and cross-platform MongoDB manager
 
 ### Installation - Testing
 
@@ -161,6 +183,19 @@ $ npm install
 $ npm start
 ```
 
+### For development build we can use gulp
+Install the gulp command
+
+```sh
+$ npm install --global gulp-cli
+```
+
+Runs run gulp automatically rebuilds and check for eslint code quality
+
+```sh
+$ gulp
+```
+
 License
 ----
 © 
@@ -170,3 +205,14 @@ License
 [Express]: <http://expressjs.com>
 [MongoDB]: <https://docs.mongodb.com/>
 [AngularJS]: <http://angularjs.org>
+[ESLint]: <http://eslint.org/>
+[Gulp]: <http://gulpjs.com/>
+[Mocha]: <https://mochajs.org/>
+[Nodemon]: <https://nodemon.io/>
+[Should]: <https://shouldjs.github.io/>
+[Supertest]: <https://github.com/visionmedia/supertest>
+[mongoosejs]: <http://mongoosejs.com/>
+[Visual Studio Code]: <https://code.visualstudio.com/>
+[Postman]: <https://www.getpostman.com/>
+[RoboMongo]: <https://robomongo.org/>
+[JWT]: <https://github.com/auth0/node-jsonwebtoken>

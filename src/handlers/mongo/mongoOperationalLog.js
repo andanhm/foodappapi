@@ -45,7 +45,7 @@ function logIt(logObj, callback) {
         version: appVersion
     };
     debug('MongoDB operational log %s ', JSON.stringify(loggerObj));
-    Log.save(loggerObj, function(err, result) { // Inset data in to the queueLogs collection
+    mongoDB.insert('tblLog', loggerObj, function(err, result) { // Inset data in to the queueLogs collection
         debug('MongoDB insert operational log error %s result %s', JSON.stringify(err), JSON.stringify(result));
         if (err) {
             return callback({

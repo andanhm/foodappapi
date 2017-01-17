@@ -1,7 +1,8 @@
 'use strict';
-const jwt = require('jsonwebtoken')
-    , errSource = require('path').basename(__filename)
-    , secert = 'foodapp';
+const errSource = require('path').basename(__filename),
+    jwt = require('jsonwebtoken'),
+    debug = require('debug')('food-app:' + errSource),
+    secert = process.env.SECERT ? process.env.SECERT : 'foodapp';
 /**
  * Callback for token genration with error, token
  *
@@ -20,11 +21,12 @@ function genrateToken(data, callback) {
         jwt.sign({
             data
         }, secert, {
-            algorithm: 'RS256'
+            algorithm: 'HS256'
         }, (err, token) => {
+            debug('')
             if (err) {
                 return callback({
-                    code: 'GT00',
+                    code: 'GT0',
                     file: errSource,
                     function: 'genrateToken',
                     message: 'Genrating token got error',
@@ -69,17 +71,17 @@ function genrateToken(data, callback) {
 function isVaildToken(token, callback) {
     try {
         jwt.verify(token, secert, (err, decoded) => {
-                if (err) {
-                    return callback({
-                        code: 'VT01',
-                        file: errSource,
-                        function: 'isVaildToken',
-                        message: 'Unhandled execption in varifing token',
-                        error: err,
-                        time: new Date()
-                    }, null);
-                }
-                return callback(null,decoded);            
+            if (err) {
+                return callback({
+                    code: 'VT01',
+                    file: errSource,
+                    function: 'isVaildToken',
+                    message: 'Unhandled execption in varifing token',
+                    error: err,
+                    time: new Date()
+                }, null);
+            }
+            return callback(null, decoded);
         });
 
     } catch (err) {

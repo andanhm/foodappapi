@@ -1,7 +1,8 @@
 'use strict';
-const mongoose = require('mongoose'),
+const mongodb = require('mongodb'),
+    MongoClient = mongodb.MongoClient,
     foodAppConfig = require('../../config/' + process.env.NODE_ENV + '.json'),
-    debug = require('debug')('foodapp:mongodb');
+    debug = require('debug')('food-app:mongodb');
 
 /**
  * Get the MongoDB connect URI fromat for connection
@@ -21,7 +22,7 @@ function getMongoDBUri() {
     return mongoDBUri;
 }
 
-var db = {};
+var _db = {};
 /**
  * Callback error details if unable to connect the MongoDB
  * @callback connectCallback
@@ -46,29 +47,30 @@ function connect() {
                     connectTimeoutMS: 500
                 }
             },
-            replSet: {}
+            replSet: {},
+            mongos: {}
         },
         dbURI = getMongoDBUri();
-    mongoose.connect(dbURI, mongoOption);
-    db = mongoose.connection;
-    db.once('open', function() {
+    MongoClient.connect(dbURI, mongoOption, (err, db) => {
+        if (err) {
+            debug('MongoDB connection err');
+        }
         debug('MongoDB connected');
-    });
-    db.on('connected', function() {
-        console.log('Mongoose default connection open to ' + dbURI);
-    });
-
-    // If the connection throws an error
-    db.on('error', function(err) {
-        console.log('Mongoose default connection error: ' + err);
-    });
-
-    // When the connection is disconnected
-    db.on('disconnected', function() {
-        console.log('Mongoose default connection disconnected');
+        _db = db;
     });
 }
 
+/**
+ * Return MongoDB database object
+ *
+ * @api public
+ * @method
+ * @returns {Object} returns The **Collection** class is an internal class that embodies a MongoDB collections
+ */
+function getDb() {
+    return _db;
+}
 module.exports = {
-    connect: connect
+    connect: connect,
+    getDb: getDb
 };

@@ -1,5 +1,5 @@
 'use strict';
-var errSource = require('path').basename(__filename),
+const errSource = require('path').basename(__filename),
     appPackage = require('../package.json'),
     debug = require('debug')('q-man:' + errSource),
     appVersion = process.env.VERSION;
@@ -8,7 +8,7 @@ var errSource = require('path').basename(__filename),
  * To format date time to desired format :- '20 Feb 2013 @ 3:46 PM'
  */
 function getLogDate() {
-    var currentTime = new Date(),
+    let currentTime = new Date(),
         month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         date = currentTime.getDate() + ' ' + month[currentTime.getMonth()] + ' ' + currentTime.getFullYear(),
         suffix = 'AM',

@@ -1,0 +1,89 @@
+{
+	"id": "4bf21bec-2615-28ec-9c8a-ab02b9c983f4",
+	"name": "Food-App",
+	"description": "",
+	"order": [
+		"85f7dd45-b9ec-53e5-40bc-a1363a7e19e5",
+		"412c0362-1147-8a53-797a-1321bb9d6f06",
+		"a147b3d9-bf9f-0c77-cd34-f3c2bda0ddcc"
+	],
+	"folders": [],
+	"timestamp": 1484669912839,
+	"owner": "117794",
+	"public": false,
+	"requests": [
+		{
+			"id": "412c0362-1147-8a53-797a-1321bb9d6f06",
+			"headers": "Content-Type: application/x-www-form-urlencoded\n",
+			"url": "localhost:8080/user",
+			"pathVariables": {},
+			"preRequestScript": null,
+			"method": "POST",
+			"collectionId": "4bf21bec-2615-28ec-9c8a-ab02b9c983f4",
+			"data": [
+				{
+					"key": "username",
+					"value": "andan",
+					"type": "text",
+					"enabled": true
+				},
+				{
+					"key": "password",
+					"value": "amma",
+					"type": "text",
+					"enabled": true
+				}
+			],
+			"dataMode": "urlencoded",
+			"name": "User registration",
+			"description": "API to register the user. username and password or mandatory fields, token will genrated for authentication",
+			"descriptionFormat": "html",
+			"time": 1484672967916,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "85f7dd45-b9ec-53e5-40bc-a1363a7e19e5",
+			"headers": "",
+			"url": "http://localhost:8080/",
+			"pathVariables": {},
+			"preRequestScript": null,
+			"method": "GET",
+			"collectionId": "4bf21bec-2615-28ec-9c8a-ab02b9c983f4",
+			"data": null,
+			"dataMode": "params",
+			"name": "Check food API running status ",
+			"description": "This api allows to check whether application running or not",
+			"descriptionFormat": "html",
+			"time": 1484669912838,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		},
+		{
+			"id": "a147b3d9-bf9f-0c77-cd34-f3c2bda0ddcc",
+			"headers": "X-Access-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoiYW5kYW4iLCJhZG1pbiI6ZmFsc2UsImFkZHJlc3MiOiIiLCJlbWFpbCI6IiIsInBob25lIjoiIiwiYWdlIjoiIiwiX2lkIjoiNTg3ZTRhODEwNDE1YmQ0NWQ0N2ZlNTE5In0sImlhdCI6MTQ4NDY3MTYxN30.Zkvt-bvWvYzH8xTXOar4hf32GWWo8tfvYaHDGZ2IaQs\n",
+			"url": "localhost:8080/api/user",
+			"pathVariables": {},
+			"preRequestScript": null,
+			"method": "GET",
+			"collectionId": "4bf21bec-2615-28ec-9c8a-ab02b9c983f4",
+			"data": null,
+			"dataMode": "params",
+			"name": "Getting all userinformation",
+			"description": "Fetchs all the user infromation",
+			"descriptionFormat": "html",
+			"time": 1484673020909,
+			"version": 2,
+			"responses": [],
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {}
+		}
+	]
+}

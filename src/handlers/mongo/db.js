@@ -1,11 +1,7 @@
-/*!
- * Module dependencies.
- */
-
 'use strict';
 const mongoClient = require('./mongoClient'),
-    debug = require('debug')('foodapp:db'),
-    mongoose = require('mongoose');
+    debug = require('debug')('food-app:db'),
+    mongo = require('mongodb');
 
 /**
  * Convert the string id to MongoDB document ObjectId
@@ -15,7 +11,7 @@ const mongoClient = require('./mongoClient'),
  * @param  {ObjectId()} id Return MongoDB Document ObjectId
  */
 function converToMonogoObjectID(id) {
-    return new mongoose.mongo.BSONPure.ObjectID.fromHexString(id); // eslint-disable-line
+    return new mongo.ObjectID(id);
 }
 /**
  * Gets the MongoDB Document ObjectId created timestamp
@@ -25,7 +21,7 @@ function converToMonogoObjectID(id) {
  * @param  {Time} id Return MongoDB Document ObjectId created timestamp
  */
 function getObjectIdTimeStamp(id) {
-    return new mongoose.mongo.BSONPure.ObjectID.fromHexString(id).getTimestamp(); // eslint-disable-line
+    return new mongo.ObjectID(id).getTimestamp();
 }
 /**
  * Callback for status of a collection exists.
@@ -42,17 +38,17 @@ function getObjectIdTimeStamp(id) {
  * @param  {doesCollectionExistsCallback} callback A callback to mongodb collection exits status
  */
 function doesCollectionExists(collectionName, callback) {
-    var db = mongoClient.getDb();
+    let db = mongoClient.getDb();
     try {
-        db.listCollections().toArray(function(err, collections) {
+        db.listCollections().toArray((err, collections) => {
             if (err) {
                 return callback({
                     status: false
                 }, null);
             }
             debug('list of collection ', collections);
-            var queueCollection = [];
-            collections.forEach(function(collectionObj) {
+            let queueCollection = [];
+            collections.forEach((collectionObj) => {
                 queueCollection.push(collectionObj.name);
             });
             if (queueCollection.indexOf(collectionName) > -1) {
@@ -83,8 +79,8 @@ function doesCollectionExists(collectionName, callback) {
  * @param  {createCollectionCallback} callback A callback to mongodb collection creaction status
  */
 function createCollection(collectionName, callback) {
-    var db = mongoClient.getDb();
-    db.createCollection(collectionName, function(err, result) {
+    let db = mongoClient.getDb();
+    db.createCollection(collectionName, (err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -115,8 +111,9 @@ function createCollection(collectionName, callback) {
  * @param  {insertCallback} callback Callback MongoDB insert status
  */
 function insert(collection, data, callback) {
+    debug('Mongo Insert -> collection getDB ->', collection);
     var db = mongoClient.getDb();
-    db.collection(collection).insert(data, function(err, result) {
+    db.collection(collection).insert(data, (err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -124,11 +121,11 @@ function insert(collection, data, callback) {
                 message: err.message
             }, null);
         }
-        var _id = result.ops[0]._id;
-        if (!_id) {
+        let data = result.ops[0];
+        if (data) {
             return callback(null, {
                 status: true,
-                id: _id,
+                data: data,
                 message: 'Data added'
             });
         }
@@ -157,7 +154,7 @@ function insert(collection, data, callback) {
  */
 function find(collectionName, collectionData, callback) {
     var db = mongoClient.getDb();
-    db.collection(collectionName).find(collectionData).toArray(function(err, result) {
+    db.collection(collectionName).find(collectionData).toArray((err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -189,7 +186,7 @@ function find(collectionName, collectionData, callback) {
  */
 function findOne(collectionName, collectionData, callback) {
     var db = mongoClient.getDb();
-    db.collection(collectionName).findOne(collectionData, function(err, result) {
+    db.collection(collectionName).findOne(collectionData, (err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -221,7 +218,7 @@ function findOne(collectionName, collectionData, callback) {
  */
 function count(collectionName, collectionData, callback) {
     var db = mongoClient.getDb();
-    db.collection(collectionName).find(collectionData).count(function(err, collectionCount) {
+    db.collection(collectionName).find(collectionData).count((err, collectionCount) => {
         if (err) {
             return callback({
                 status: false,
@@ -256,7 +253,7 @@ function updateOne(collectionName, collectionData, updateCollectionData, callbac
     var db = mongoClient.getDb();
     db.collection(collectionName).updateOne(collectionData, {
         $set: updateCollectionData
-    }, function(err, result) {
+    }, (err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -291,7 +288,7 @@ function update(collectionName, collectionData, updateCollectionData, callback) 
     var db = mongoClient.getDb();
     db.collection(collectionName).updateOne(collectionData, {
         $set: updateCollectionData
-    }, function(err, result) {
+    }, (err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -320,7 +317,7 @@ function update(collectionName, collectionData, updateCollectionData, callback) 
  */
 function listCollections(callback) {
     var db = mongoClient.getDb();
-    db.listCollections().toArray(function(err, collInfos) {
+    db.listCollections().toArray((err, collInfos) => {
         if (err) {
             return callback({
                 status: false,
@@ -352,7 +349,7 @@ function listCollections(callback) {
  */
 function aggregate(collectionName, aggregateCondition, callback) {
     var db = mongoClient.getDb();
-    db.collection(collectionName).aggregate(aggregateCondition, function(err, result) {
+    db.collection(collectionName).aggregate(aggregateCondition, (err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -382,7 +379,7 @@ function aggregate(collectionName, aggregateCondition, callback) {
  */
 function dropDatabase(callback) {
     var db = mongoClient.getDb();
-    db.dropDatabase(function(err, result) {
+    db.dropDatabase((err, result) => {
         if (err) {
             return callback({
                 status: false,
@@ -412,7 +409,7 @@ function dropDatabase(callback) {
  */
 function dropCollection(name, callback) {
     var db = mongoClient.getDb();
-    db.collection(name, function(err, collection) {
+    db.collection(name, (err, collection) => {
         if (err) {
             return callback({
                 status: false,
@@ -420,7 +417,7 @@ function dropCollection(name, callback) {
                 message: err.message
             });
         }
-        collection.drop(function(err, result) {
+        collection.drop((err, result) => {
             if (err) {
                 return callback({
                     status: false,
@@ -438,7 +435,7 @@ function dropCollection(name, callback) {
 
 function emptyCollection(name, callback) {
     var db = mongoClient.getDb();
-    db.collection(name, function(err, collection) {
+    db.collection(name, (err, collection) => {
         if (err) {
             return callback({
                 status: false,
@@ -446,7 +443,7 @@ function emptyCollection(name, callback) {
                 message: err.message
             });
         }
-        collection.remove({}, function(err, result) {
+        collection.remove({}, (err, result) => {
             if (err) {
                 return callback({
                     status: false,
