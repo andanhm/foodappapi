@@ -1,5 +1,5 @@
-# Food App API using NodeJS
 
+# Food App API using NodeJS
 > This is a my Food App API for my android application. 
 
 How the process get starts:
@@ -36,30 +36,38 @@ Current API entry format:
 | HTTP Status Code | Description |
 | --- | --- |
 | OK (200) | This is the generic status code for a successfully processed request. |
-| No content (204) | This is the generic status code for a successfully processed request but no data found. |
 | Created (201) | This is the generic status code for a successfully processed request. |
+| No content (204) | This is the generic status code for a successfully processed request but no data found. |
 | Bad Request (400) | The service is unable to understand and process the request. |
 | Not Found (404) | No results were found (on a search request), or object specified in URI does not exist. |
 | Bad Request (422) | The request is well formed, but was unable to be completed or validated due to business logic constraints, missing data, etc.  |
 | Internal Server Error (500) | The server encountered an unexpected condition which prevented it from fulfilling the request. |
 
-# Food app API
-
 ## HTTP Response
 ```json
 {
   error:{
-    code: 1, // Unique error code defined in order to debug error easly(01)
-    errSource: "", // File from where error occurred (userCtrl)
-    function: "", // Function name (getUserStaus)
-    message: "", // Message of the error (Unable to fetch the user information)
-    description: "", // Description of the error message in detail
-    time: "2016-12-19T19:23:59.617Z" // Error occurred time in ISO format
+    code: 1, 
+    errSource: "userCtrl",
+    function: "", 
+    message: "",
+    description: "",
+    time: "2016-12-19T19:23:59.617Z"
   },
-  data:{}, // Valid Response information
-  version:"1.0.0" // Determains the API version from the package version
+  data:{}, 
+  version:"1.0.0"
 }
 ```
+| Key | Description |
+| --- | --- |
+| code | Unique error code defined in order to debug error easly(01) |
+| errSource | File from where error occurred |
+| function | Function name (getUserStaus) |
+| message | Message of the error |
+| description | Detail description of the error message |
+| time |  Error occurred time in ISO format  |
+| data | Valid Response information |
+| version | Determains the API version from the package version |
 
 ## Unit Test
 ### Mocha
