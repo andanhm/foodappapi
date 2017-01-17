@@ -6,7 +6,7 @@ process.env.VERSION = require('./package.json').version || 'undefined';
 
 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing') {
     // process.env.DEBUG = process.env.DEBUG || 'app,express:router,express:application,foodapi:*,mongodb';
-    process.env.DEBUG = 'foodapi:*';
+    process.env.DEBUG = 'food-app:*';
 }
 
 const errSource = require('path').basename(__filename),
@@ -92,7 +92,7 @@ function appInitiation() {
         next();
     });
     //Display express server routes in your terminal
-    require('express-routemap')(app);
+    //    require('express-routemap')(app);
     app.all((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With,X-Access-Token, Content-Type, Accept');

@@ -25,3 +25,25 @@ describe('Food app health API -- ', function() {
     });
 
 });
+let token = {};
+
+describe('Registering new user -- ', function() {
+    let bodyCreateParameters = {
+        username: 'andan',
+        password: 'amma'
+    }
+    it('/POST', function(done) { //API test to determain the app version
+        server
+            .post('/user/')
+            .set('Content-Type', 'application/x-www-form-urlencoded')
+            .send(bodyCreateParameters)
+            .expect('Content-type', /json/)
+            .expect(201)
+            .end(function(err, res) {
+                if (err) return done(err);
+                res.status.should.equal(201);
+                token = res.body.data.token;
+                done();
+            });
+    });
+});
