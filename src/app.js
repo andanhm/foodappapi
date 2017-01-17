@@ -9,52 +9,64 @@ if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing'
     // process.env.DEBUG = '';
 }
 
-var errSource = require('path').basename(__filename)
-  , debug = require('debug')('foodapi:app')
-  , log = require('./handlers/logs.js')
-  , cluster = require('cluster')
-  , numCPUs = require('os').cpus().length
-  , config = require('./config/' + process.env.NODE_ENV + '.json');
+const errSource = require('path').basename(__filename),
+    debug = require('debug')('foodapi:app'),
+    log = require('./handlers/logs.js'),
+    cluster = require('cluster'),
+    numCPUs = require('os').cpus().length,
+    config = require('./config/' + process.env.NODE_ENV + '.json');
 
 process.env.PORT = process.env.PORT || config.port;
 
 debug('environment: ' + process.env.NODE_ENV);
 debug('version: ' + process.env.VERSION);
 
-
-// Check if the master process is running
-if (cluster.isMaster) {
-
-    // Fork workers.
-    var i = 0;
-    for (i = 0; i < numCPUs * config.multiples; i += 1) {
-        cluster.fork();
-        debug('Cluster forked ' + i);
-    }
-
-    cluster.on('exit', function(worker, code, signal) {
-        debug('worker ' + worker.process.pid + ' died with code: ' + code + ' signal: ' + signal);
-        //fork an new process if app crashes
-        if (code !== 0) {
-            cluster.fork();
-            debug('New process folked');
-        }
-    });
-
-    cluster.on('online', function(worker) {
-        debug('A worker with #' + worker.id + ' has started');
-    });
-
-    cluster.on('listening', function(worker, address) {
-        debug('A worker with #' + worker.id + ' has started');
-        debug('A worker is now connected to ' + address.address + ':' + address.port);
-    });
+if (process.env.NODE_ENV !== 'development') {
+    createAppCluster();
+} else {
+    appInitiation();
 }
 
-if (cluster.isWorker) {
-    var express = require('express')
-      , bodyParser = require('body-parser')
-      , app = express();
+function createAppCluster() {
+    // Check if the master process is running
+    if (cluster.isMaster) {
+
+        // Fork workers.
+        var i = 0;
+        for (i = 0; i < numCPUs * config.multiples; i += 1) {
+            cluster.fork();
+            debug('Cluster forked ' + i);
+        }
+
+        cluster.on('exit', function(worker, code, signal) {
+            debug('worker ' + worker.process.pid + ' died with code: ' + code + ' signal: ' + signal);
+            //fork an new process if app crashes
+            if (code !== 0) {
+                cluster.fork();
+                debug('New process folked');
+            }
+        });
+
+        cluster.on('online', function(worker) {
+            debug('A worker with #' + worker.id + ' has started');
+        });
+
+        cluster.on('listening', function(worker, address) {
+            debug('A worker with #' + worker.id + ' has started');
+            debug('A worker is now connected to ' + address.address + ':' + address.port);
+        });
+    }
+
+    if (cluster.isWorker) {
+        appInitiation()
+    }
+}
+
+// Expose all express methods   
+function appInitiation() {
+    let express = require('express'),
+        bodyParser = require('body-parser'),
+        app = express();
 
     app.set('env', process.env.NODE_ENV);
     app.set('port', process.env.PORT);
@@ -108,12 +120,13 @@ if (cluster.isWorker) {
             }
         });
     });
+
     /** 
-    * Auth Middleware - This will check if the token is valid
-    * Only the requests that start with /api will be checked for the token.
-    * Any URL's that do not follow the below pattern should be avoided unless you 
-    * are sure that authentication is not needed
-    */
+     * Auth Middleware - This will check if the token is valid
+     * Only the requests that start with /api will be checked for the token.
+     * Any URL's that do not follow the below pattern should be avoided unless you 
+     * are sure that authentication is not needed
+     */
     app.all('/api/*', [require('./middelwares/authenticate')]);
 
     // Routes for user API
@@ -126,7 +139,7 @@ if (cluster.isWorker) {
         });
     }
 
-    app.use((error, req, res, next) => {
+    app.use((error, req, res) => {
         res.status(error.status || 404).type('json').send({
             error: {
                 title: 'error',
@@ -138,9 +151,14 @@ if (cluster.isWorker) {
         });
     });
 
-    app.use((error, req, res, next) => {
+    app.use((error, req, res) => {
         res.status(error.status || 500).type('json').send({
-            error: error,
+            error: {
+                title: 'error',
+                error: error,
+                message: error.message,
+                trace: error.stack
+            },
             data: {}
         });
     });
